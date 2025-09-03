@@ -147,32 +147,7 @@ const intents = {
 let manualShown = false;
 
 function detectLocation() {
-	if ("geolocation" in navigator) {
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				const { latitude, longitude } = position.coords;
-				userLat = latitude;
-				userLon = longitude;
-				try {
-					reverseGeocode(userLat, userLon);
-				} catch (e) {
-					console.error('Reverse geocode call failed:', e);
-					showManualLocationInput("Could not determine city. Please enter it manually.");
-				}
-			},
-			(error) => {
-				console.error("Error getting location:", error && error.message ? error.message : error);
-				if (!manualShown) {
-					alert("Unable to get your location. Please allow location access or enter it manually.");
-					showManualLocationInput("Location access denied/unavailable. Please enter it manually.");
-				}
-			},
-			{ enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-		);
-	} else {
-		alert("Geolocation is not supported by this browser.");
-		showManualLocationInput("Geolocation not supported. Please enter location manually.");
-	}
+	showManualLocationInput('Please enter your location to proceed.');
 }
 
 // existing onload: call detectLocation()
@@ -191,14 +166,8 @@ window.onload = function () {
 		});
 	}
 
-	// Watchdog: if location not set within 5s, show manual entry
-	setTimeout(() => {
-		if (!userLocation && !manualShown) {
-			showManualLocationInput("Couldn't auto-detect location. Please enter it manually.");
-		}
-	}, 5000);
-
-	detectLocation();
+	// Immediately show manual input; no auto-detection
+	showManualLocationInput('Please enter your location to proceed.');
 
 	// Allow pressing Enter in manual input to start
 	const manualInput = document.getElementById('initialLocation');
