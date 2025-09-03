@@ -28,45 +28,6 @@ app.get('/predict', (_req, res) => {
 	res.json({ ok: true, route: '/predict', message: 'Example prediction endpoint', model: process.env.GEMINI_MODEL || 'gemini-1.5-flash' });
 });
 
-// Proxy: IP-based geolocation (server-side to avoid client CORS issues)
-app.get('/api/ip', async (_req, res) => {
-	try {
-		const resp = await fetch('https://ipapi.co/json/');
-		if (!resp.ok) return res.status(502).json({ error: 'ipapi failed' });
-		const data = await resp.json();
-		res.json({
-			latitude: data.latitude,
-			longitude: data.longitude,
-			city: data.city,
-			region: data.region,
-			country: data.country_name
-		});
-	} catch (e) {
-		console.error('IP proxy error:', e);
-		res.status(500).json({ error: 'ip proxy error' });
-	}
-});
-
-// Proxy: Reverse geocoding via Nominatim with proper headers
-app.get('/api/reverse-geocode', async (req, res) => {
-	try {
-		const { lat, lon } = req.query || {};
-		if (!lat || !lon) return res.status(400).json({ error: 'lat and lon required' });
-		const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-		const resp = await fetch(url, {
-			headers: {
-				'User-Agent': 'KisanMitra/1.0 (contact: support@kisanmitra.example)'
-			}
-		});
-		if (!resp.ok) return res.status(502).json({ error: 'nominatim failed' });
-		const data = await resp.json();
-		res.json(data);
-	} catch (e) {
-		console.error('Reverse geocode proxy error:', e);
-		res.status(500).json({ error: 'reverse geocode proxy error' });
-	}
-});
-
 // Chat endpoint
 app.post('/chat', async (req, res) => {
 	try {
