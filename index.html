@@ -412,6 +412,8 @@
             <div class="location-status" id="locationStatus">
                 Detecting your location...
             </div>
+            <button onclick="detectLocation()" id="detectBtn">Detect My Location</button>
+            <p id="location"></p>
             <button onclick="startChat()" id="startButton" style="display: none;">Start Chat</button>
         </div>
     </div>
@@ -556,7 +558,7 @@
                 "common-pests": { "question": "நீங்கள் எந்த பூச்சியை எதிர்கொள்கிறீர்கள்?", "options": ["அசுவினி", "வெள்ளை ஈ", "காய்ப் புழு", "தண்டுத் துளைப்பான்", "வெட்டுக்கிளி", "மற்றவை"] },
                 "soil-health": "மண் வளத்தை மேம்படுத்த, సేంద్రియ పదార్థాలను కలపడం ముఖ్యం. நீங்கள் ఇటీవల உங்கள் நேல pH స్థాయిని పరీక్షించారా?", "soil_health_yes": "அருமை! pH அளவை அறிவது சரியான பயிர்களையும் ஊட்டச்சத்துக்களையும் தேர்ந்தெடுக்க உதவுகிறது.", "soil_health_no": "மண் பரிசோதனை செய்ய பரிந்துரைக்கிறேன். இது சிறந்த பயிர் திட்டமிடலுக்கு pH மற்றும் ஊட்டச்சத்து அளவுகள் பற்றிய முக்கியமான தகவல்களை வழங்குகிறது.",
                 "fertilizer_guidance": "நல்ல மண் வளத்திற்கு, *மண்புழு உரம் அல்லது தொழு உரம்* போன்ற கரிம உரங்கள் மிகவும் பரிந்துரைக்கப்படுகின்றன. இவை காலப்போக்கில் மண்ணின் அமைப்பையும் வளத்தையும் மேம்படுத்துகின்றன. நீங்கள் எத்தனை ஏக்கரில் உரமிட திட்டமிட்டுள்ளீர்கள்?",
-                "default": "மன்னிக்கவும், எனக்குப் புரியவில்லை. பயிர்கள், பூச்சிகள், உரம், வானிலை அல்லது விலைகள் பற்றி கேட்கவும்."
+                "default": "மன்னிக்கவும், எனக்கு புரியவில்லை. பயிர்கள், பூச்சிகள், உரம், வானிலை அல்லது விலைகள் பற்றி அ஡஗ஂ஡ி."
             },
             "te": {
                 "greeting": "నమస్కారం! నేను కృషి మిత్ర. ఈ రోజు మీ వ్యవసాయ అవసరాలకు నేను ఎలా సహాయపడగలను?",
@@ -855,6 +857,24 @@
             document.getElementById('startButton').style.display = 'block';
         }
         
+        function detectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLat = position.coords.latitude;
+                        userLon = position.coords.longitude;
+                        reverseGeocode(userLat, userLon);
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error);
+                        showManualLocationInput("Could not detect location. Please enter it manually.");
+                    }
+                );
+            } else {
+                showManualLocationInput("Geolocation is not supported. Please enter your location manually.");
+            }
+        }
+
         function sendSoilType(type) {
             isAwaitingSoilType = false;
             const clickedType = translations[userLanguage]['soil-types'].options.find(opt => type.toLowerCase().includes(opt.toLowerCase())) || type;
