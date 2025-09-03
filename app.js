@@ -810,7 +810,7 @@ async function fetchAIResponse(message) {
             // Send last 10 turns to keep request small
             history: chatHistory.slice(-10)
         };
-        const resp = await fetch('http://localhost:3000/chat', {
+        const resp = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)

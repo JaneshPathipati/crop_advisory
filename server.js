@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '1mb' }));
 
 // Serve static files (CSS, JS, images)
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { extensions: ['html'] }));
 
 // Root route -> serve index.html
 app.get('/', (req, res) => {
