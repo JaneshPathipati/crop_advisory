@@ -2,31 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path');
 // Gemini SDK
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '1mb' }));
 
-// Serve static files (CSS, JS, images)
-app.use(express.static(__dirname));
-
-// Root route -> serve index.html
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'index.html'));
-});
-
 // Health check
-app.get('/health', (_req, res) => res.json({ ok: true }));
-
-// Example JSON route
-app.get('/predict', (_req, res) => {
-	res.json({ ok: true, route: '/predict', message: 'Example prediction endpoint', model: process.env.GEMINI_MODEL || 'gemini-1.5-flash' });
-});
+app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 // Proxy: IP-based geolocation (server-side to avoid client CORS issues)
 app.get('/api/ip', async (_req, res) => {
@@ -67,8 +52,8 @@ app.get('/api/reverse-geocode', async (req, res) => {
 	}
 });
 
-// Chat endpoint
-app.post('/chat', async (req, res) => {
+// Chat endpoint (serverless path /api/chat)
+app.post('/api/chat', async (req, res) => {
 	try {
 		const {
 			message,
@@ -84,7 +69,6 @@ app.post('/chat', async (req, res) => {
 			return res.status(400).json({ error: 'message is required' });
 		}
 
-		// Use Gemini only (as requested)
 		const geminiKey = process.env.GEMINI_API_KEY;
 		if (!geminiKey) {
 			return res.status(500).json({ error: 'GEMINI_API_KEY must be set on server' });
@@ -102,7 +86,6 @@ Use the provided context (if available):
 Provide: crop selection advice, integrated pest management, fertilizer and soil health guidance, weather-aware tips, and market-aware considerations when relevant.
 NEVER fabricate regulations or chemical dosages; prefer integrated pest management and safe, locally appropriate practices. Avoid medical or veterinary advice.`;
 
-		// Build conversation contents with short memory
 		const limitedHistory = Array.isArray(history) ? history.slice(-10) : [];
 		const contents = [];
 		contents.push({ role: 'user', parts: [{ text: systemPrompt }] });
@@ -125,7 +108,6 @@ NEVER fabricate regulations or chemical dosages; prefer integrated pest manageme
 	}
 });
 
-// Do not call app.listen() in serverless/Vercel. Export the app instead.
 module.exports = app;
 
 
