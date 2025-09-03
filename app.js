@@ -116,9 +116,9 @@ const translations = {
         "ask_crop_price": "તમે કયા પાકનો ભાવ જાણવા માંગો છો?",
         "weather_report": "<b>{location} માં હવામાન:</b><br>તાપમાન: {temp}°C<br>સ્થિતિ: {description}<br>આર્દ્રતા: {humidity}%<br>પવનની ગતિ: {wind} m/s",
         "weather_error": "માફ કરશો, હું તમારા સ્થાન માટે હવામાન માહિતી મેળવી શક્યો નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.",
-        "soil-types": { "question": "તમારી માટીનો પ્રકાર શું છે?", "options": ["આલ્યુવિયલ", "કાળી", "લાલ", "લેટરાઇટ", "શૂષ્ક", "જંગલ"] },
+        "soil-types": { "question": "તમારી માટીનો પ્રકાર શું છે?", "options": ["આલ્યુવિયલ", "કાળી", "લાલ", "લેટરાઇટ", "શૂષ్ક", "જંગલ"] },
         "common-pests": { "question": "તમે કયા કિટકનો સામનો કરી રહ્યાં છો?", "options": ["એફિડ્સ", "વ્હાઇટફ્લાય", "બોલવોર્મ", "સ્ટેમ બોરર", "ટીડા", "અન્ય"] },
-        "soil-health": "માટીનું આરೋಗ್ಯ સુધારવા માટે સજીવ પદાર્થ ઉમેરવો મહત્વપૂર્ણ છે. શું તમે તાજેતરમાં તમારી માટીનો pH ચકાસ્યો છે?",
+        "soil-health": "માટીનું આરೋગ્ય સુધારવા માટે સજીવ પદાર્થ ઉમેરવો મહત્વપૂર્ણ છે. શું તમે તાજેતરમાં તમારી માટીનો pH ચકાસ્યો છે?",
         "soil_health_yes": "શાનદાર! pH જાણવાથી યોગ્ય પાક અને પોષક તત્ત્વો પસંદ કરવામાં મદદ મળે છે.",
         "soil_health_no": "હું માટી પરીક્ષણ કરવાની ભલામણ કરું છું. તે pH અને પોષક તત્ત્વોના સ્તર અંગે મહત્વપૂર્ણ માહિતી આપે છે.",
         "fertilizer_guidance": "સારી માટી સ્વાસ્થ્ય માટે *કંપનીસ્ટ અથવા વર્મીકંપનીસ્ટ* જેવા સજીવ ખાતરોની ભલામણ થાય છે. તે સમય સાથે માટીની રચના અને સાર્ભૂતામાં સુધારો કરે છે. તમે કેટલા એકર માટે ખાતર આપવાની યોજના બનાવો છો?",
@@ -138,100 +138,120 @@ const intents = {
     "en": { "greeting": ["hello", "hi", "hey"], "crop_selection": ["crop", "sowing", "plant"], "pest_control": ["pest", "insect", "disease"], "fertilizer": ["fertilizer", "compost", "manure"], "weather": ["weather", "rain", "forecast"], "soil_health": ["soil", "health", "ph"], "market_prices": ["price", "market", "rate"] },
     "hi": { "greeting": ["नमस्ते", "नमस्कार"], "crop_selection": ["फसल", "बुवाई", "लगाना"], "pest_control": ["कीट", "रोग", "कीड़ा"], "fertilizer": ["उर्वरक", "खाद"], "weather": ["मौसम", "बारिश"], "soil_health": ["मिट्टी", "पीएच"], "market_prices": ["कीमत", "बाजार", "भाव", "दाम"] },
     "ta": { "greeting": ["வணக்கம்"], "crop_selection": ["பயிர்", "விதைப்பு"], "pest_control": ["பூச்சி", "நோய்"], "fertilizer": ["உரம்"], "weather": ["வானிலை", "மழை"], "soil_health": ["மண்", "பிஎச்"], "market_prices": ["விலை", "சந்தை"] },
-    "te": { "greeting": ["నమస్కారం"], "crop_selection": ["పంట", "విత్తడం"], "pest_control": ["పురుగు", "తెగులు", "రోగం"], "fertilizer": ["ఎరువు"], "weather": ["వాతావరణం", "వర్షం"], "soil_health": ["నేల", "పిహెచ్"], "market_prices": ["ధర", "మార్కెట్"] },
+    "te": { "greeting": ["నమస్కారం"], "crop_selection": ["పంట", "విత్తడం"], "pest_control": ["పురుగు", "తెగులు", "రోగం"], "fertilizer": ["ఎరువు"], "weather": ["వాతావరణ సలహా", "వర్షం"], "soil_health": ["నేల", "పిహెచ్"], "market_prices": ["ధర", "మార్కెట్"] },
     "bn": { "greeting": ["নমস্কার", "হ্যালো"], "crop_selection": ["ফসল", "বপন", "চাষ"], "pest_control": ["পোকা", "রোগ"], "fertilizer": ["সার"], "weather": ["আবহাওয়া", "বৃষ্টি"], "soil_health": ["মাটি", "পিএইচ"], "market_prices": ["দাম", "দর", "বাজার"] },
     "gu": { "greeting": ["નમસ્તે", "હેલો"], "crop_selection": ["પાક", "વાવણી"], "pest_control": ["કિટક", "રોગ"], "fertilizer": ["ખાતર"], "weather": ["હવામાન", "વરસાદ"], "soil_health": ["માટી", "pH"], "market_prices": ["ભાવ", "બજાર"] }
 };
 
-window.onload = function () {
-    const linkEl = document.createElement('link');
-    linkEl.rel = 'stylesheet';
-    linkEl.href = 'styles.css';
-    document.head.appendChild(linkEl);
+// Detection/manual flags
+let manualShown = false;
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                userLat = position.coords.latitude;
-                userLon = position.coords.longitude;
-                reverseGeocode(userLat, userLon);
-            },
-            async (error) => {
-                console.error("Geolocation error:", error);
-                await tryLocationFallbacks();
-            },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-        );
-    } else {
-        tryLocationFallbacks();
-    }
+window.onload = function () {
+	const linkEl = document.createElement('link');
+	linkEl.rel = 'stylesheet';
+	linkEl.href = 'styles.css';
+	document.head.appendChild(linkEl);
+
+	// Watchdog: if location not set within 7s, show manual entry
+	setTimeout(() => {
+		if (!userLocation && !manualShown) {
+			showManualLocationInput("Couldn't auto-detect location. Please enter it manually.");
+		}
+	}, 7000);
+
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				userLat = position.coords.latitude;
+				userLon = position.coords.longitude;
+				reverseGeocode(userLat, userLon);
+			},
+			async (error) => {
+				console.error("Geolocation error:", error);
+				await tryLocationFallbacks();
+				// If still unresolved, force manual entry
+				if (!userLocation && !manualShown) {
+					showManualLocationInput("Location access denied/unavailable. Please enter it manually.");
+				}
+			},
+			{ enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+		);
+	} else {
+		tryLocationFallbacks();
+	}
+
+	// Allow pressing Enter in manual input to start
+	const manualInput = document.getElementById('initialLocation');
+	if (manualInput) {
+		manualInput.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				startChat();
+			}
+		});
+	}
 };
 
 function reverseGeocode(lat, lon) {
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.address && data.address.country_code === 'in') {
-                userState = data.address.state;
-                userDistrict = data.address.state_district || data.address.city || data.address.county;
-                if (userDistrict && userState) {
-                    userLocation = `${userDistrict}, ${userState}`;
-                    document.getElementById('locationStatus').textContent = `Location: ${userLocation}`;
-                } else {
-                    showManualLocationInput("Could not pinpoint district. Please enter manually.");
-                }
-            } else {
-                showManualLocationInput("Service is available only in India. Please enter location.");
-            }
-            document.getElementById('startButton').style.display = 'block';
-        })
-        .catch(error => {
-            console.error("Reverse geocoding error:", error);
-            showManualLocationInput("Could not determine city. Please enter it manually.");
-        });
+	fetch(`/api/reverse-geocode?format=json&lat=${lat}&lon=${lon}`)
+		.then(response => response.json())
+		.then(data => {
+			if (data.address && data.address.country_code === 'in') {
+				userState = data.address.state;
+				userDistrict = data.address.state_district || data.address.city || data.address.county;
+				if (userDistrict && userState) {
+					userLocation = `${userDistrict}, ${userState}`;
+					document.getElementById('locationStatus').textContent = `Location: ${userLocation}`;
+				} else {
+					showManualLocationInput("Could not pinpoint district. Please enter manually.");
+				}
+			} else {
+				showManualLocationInput("Service is available only in India. Please enter location.");
+			}
+			document.getElementById('startButton').style.display = 'block';
+		})
+		.catch(error => {
+			console.error("Reverse geocoding error:", error);
+			showManualLocationInput("Could not determine city. Please enter it manually.");
+		});
 }
 
 async function tryLocationFallbacks() {
-    // 1) Try OpenWeather geocoding using IP-approximate location if available via browser
-    try {
-        // Use a simple IP geolocation service first
-        const ipResp = await fetch('https://ipapi.co/json/');
-        if (ipResp.ok) {
-            const ipData = await ipResp.json();
-            if (ipData && ipData.latitude && ipData.longitude) {
-                userLat = ipData.latitude;
-                userLon = ipData.longitude;
-                await reverseGeocode(userLat, userLon);
-                return;
-            }
-        }
-    } catch (e) {
-        console.warn('IP geolocation failed:', e);
-    }
+	try {
+		const ipResp = await fetch('/api/ip');
+		if (ipResp.ok) {
+			const ipData = await ipResp.json();
+			if (ipData && ipData.latitude && ipData.longitude) {
+				userLat = ipData.latitude;
+				userLon = ipData.longitude;
+				await reverseGeocode(userLat, userLon);
+				return;
+			}
+		}
+	} catch (e) {
+		console.warn('IP geolocation failed:', e);
+	}
 
-    try {
-        // 2) Fallback to OpenWeather reverse geocoding if lat/lon present (unlikely here)
-        if (userLat && userLon) {
-            const ow = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${userLat}&lon=${userLon}&limit=1&appid=${OPENWEATHER_API_KEY}`);
-            if (ow.ok) {
-                const arr = await ow.json();
-                if (Array.isArray(arr) && arr.length) {
-                    const best = arr[0];
-                    userDistrict = best.state || best.name;
-                    userState = best.state || best.name;
-                    userLocation = `${userDistrict}, ${userState}`;
-                    document.getElementById('locationStatus').textContent = `Location: ${userLocation}`;
-                    document.getElementById('startButton').style.display = 'block';
-                    return;
-                }
-            }
-        }
-    } catch (e) {
-        console.warn('OpenWeather reverse geocoding fallback failed:', e);
-    }
+	try {
+		if (userLat && userLon) {
+			const ow = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${userLat}&lon=${userLon}&limit=1&appid=${OPENWEATHER_API_KEY}`);
+			if (ow.ok) {
+				const arr = await ow.json();
+				if (Array.isArray(arr) && arr.length) {
+					const best = arr[0];
+					userDistrict = best.state || best.name;
+					userState = best.state || best.name;
+					userLocation = `${userDistrict}, ${userState}`;
+					document.getElementById('locationStatus').textContent = `Location: ${userLocation}`;
+					document.getElementById('startButton').style.display = 'block';
+					return;
+				}
+			}
+		}
+	} catch (e) {
+		console.warn('OpenWeather reverse geocoding fallback failed:', e);
+	}
 
-    // Final fallback: ask user
-    showManualLocationInput("Could not detect location. Please enter it manually.");
+	showManualLocationInput("Could not detect location. Please enter it manually.");
 }
 
 function startChat() {
@@ -910,9 +930,10 @@ function toggleVoiceInput(forceStop = false) {
 }
 
 function showManualLocationInput(message) {
-    document.getElementById('locationStatus').textContent = message;
-    document.getElementById('locationInputContainer').style.display = 'block';
-    document.getElementById('startButton').style.display = 'block';
+	document.getElementById('locationStatus').textContent = message;
+	document.getElementById('locationInputContainer').style.display = 'block';
+	document.getElementById('startButton').style.display = 'block';
+	manualShown = true;
 }
 
 function sendSoilType(type) {
