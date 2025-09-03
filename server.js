@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 // Gemini SDK
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
@@ -11,9 +12,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '1mb' }));
 
-// Root route for Vercel
-app.get('/', (_req, res) => {
-	res.send('Hello from Crop Advisory API 🚀');
+// Serve static files (CSS, JS, images)
+app.use(express.static(__dirname));
+
+// Root route -> serve index.html
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Health check
