@@ -4,10 +4,10 @@
       { "src": "server.js", "use": "@vercel/node" }
     ],
     "routes": [
-      { "src": "/(styles\\.css|app\\.js|favicon\\.ico|.*\\.(png|jpg|jpeg|gif|svg|webp|ico))", "dest": "/$1" },
+      { "src": "/(chat|predict|health)$", "dest": "server.js" },
+      { "src": "/(styles\\.css|app\\.js|favicon\\.ico|.*\\.(png|jpg|jpeg|gif|svg|webp|ico))$", "dest": "/$1" },
       { "src": "/$", "dest": "/index.html" },
-      { "src": "/(chat|predict|health)", "dest": "server.js" },
-      { "src": "/(.*)", "dest": "server.js" }
+      { "src": "/(.*)", "dest": "/index.html" }
     ]
 }
   
