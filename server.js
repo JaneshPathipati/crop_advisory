@@ -10,11 +10,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '1mb' }));
 
-// Health check
-app.get('/api/health', (_req, res) => res.json({ ok: true }));
+// Health check (mounted at /api/health on Vercel)
+app.get('/health', (_req, res) => res.json({ ok: true }));
 
 // Proxy: IP-based geolocation (server-side to avoid client CORS issues)
-app.get('/api/ip', async (_req, res) => {
+app.get('/ip', async (_req, res) => {
 	try {
 		const resp = await fetch('https://ipapi.co/json/');
 		if (!resp.ok) return res.status(502).json({ error: 'ipapi failed' });
@@ -33,7 +33,7 @@ app.get('/api/ip', async (_req, res) => {
 });
 
 // Proxy: Reverse geocoding via Nominatim with proper headers
-app.get('/api/reverse-geocode', async (req, res) => {
+app.get('/reverse-geocode', async (req, res) => {
 	try {
 		const { lat, lon } = req.query || {};
 		if (!lat || !lon) return res.status(400).json({ error: 'lat and lon required' });
@@ -52,8 +52,8 @@ app.get('/api/reverse-geocode', async (req, res) => {
 	}
 });
 
-// Chat endpoint (serverless path /api/chat)
-app.post('/api/chat', async (req, res) => {
+// Chat endpoint (mounted at /api/chat on Vercel)
+app.post('/chat', async (req, res) => {
 	try {
 		const {
 			message,
