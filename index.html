@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Mitra - Crop Advisory Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #4caf50;
+            --secondary: #388e3c;
+            --accent: #8bc34a;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --text: #212121;
+            --text-light: #757575;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --chatbot-bg: #f5f5f5;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: none;
+            flex: 1;
+            gap: 20px;
+            padding: 20px 0;
+            overflow-y: auto; 
+        }
+        
+        .options-panel {
+            flex: 0 0 300px;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .options-panel h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .option-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-card:hover {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .option-card i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .chatbot-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            min-height: 500px;
+            max-height: calc(100vh - 150px);
+        }
+
+        .chat-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header .status {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--chatbot-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--primary);
+            color: var(--white);
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: #ffffff;
+            color: var(--text);
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .market-options, .soil-options, .pest-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .market-option, .soil-option, .pest-option {
+            background-color: var(--light);
+            border: 1px solid var(--accent);
+            color: var(--dark);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .market-option:hover, .soil-option:hover, .pest-option:hover {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: var(--white);
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .chat-input button:hover {
+            background: var(--secondary);
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .voice-input {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .voice-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .voice-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .voice-btn.active {
+            background: #d32f2f;
+        }
+
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 20px 0;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .intro-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+            padding: 40px;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 50px auto;
+            max-width: 600px;
+        }
+
+        .intro-screen h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .intro-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .intro-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .intro-form input, .intro-form select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .intro-form button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .intro-form button:hover {
+            background: var(--secondary);
+        }
+        
+        .location-status {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+        
+        .bot-message p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .options-panel {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                    <h1>Kisan Mitra - Crop Advisory Chatbot</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="intro-screen" id="introScreen">
+        <div class="logo">
+            <i class="fas fa-seedling" style="font-size: 40px; color: var(--primary);"></i>
+            <h2 style="font-size: 28px;">Welcome to Kisan Mitra!</h2>
+        </div>
+        <p>Please select your preferred language. We will try to automatically detect your location.</p>
+        <div class="intro-form">
+            <div>
+                <label for="initialLanguage">Select your Language:</label>
+                <select id="initialLanguage">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi (हिन्दी)</option>
+                    <option value="ta">Tamil (தமிழ்)</option>
+                    <option value="te">Telugu (తెలుగు)</option>
+                    <option value="bn">Bengali (বাংলা)</option>
+                    <option value="gu">Gujarati (ગુજરાતી)</option>
+                </select>
+            </div>
+            <div id="locationInputContainer" style="display: none;">
+                <label for="initialLocation">Enter your Location (e.g., city, state):</label>
+                <input type="text" id="initialLocation" placeholder="e.g., Bhopal, Madhya Pradesh">
+            </div>
+            <div class="location-status" id="locationStatus">
+                Detecting your location...
+            </div>
+            <button onclick="startChat()" id="startButton" style="display: none;">Start Chat</button>
+        </div>
+    </div>
+
+    <div class="container main-content" id="mainContent">
+        <div class="options-panel">
+            <h2 id="optionsTitle">Quick Advisory Options</h2>
+            <div class="option-card" onclick="selectOption('crop-selection')">
+                <i class="fas fa-seedling"></i> <span class="option-text">Crop Selection Advice</span>
+            </div>
+            <div class="option-card" onclick="selectOption('pest-control')">
+                <i class="fas fa-bug"></i> <span class="option-text">Pest Control Advice</span>
+            </div>
+            <div class="option-card" onclick="selectOption('fertilizer')">
+                <i class="fas fa-flask"></i> <span class="option-text">Fertilizer Guidance</span>
+            </div>
+            <div class="option-card" onclick="selectOption('weather')">
+                <i class="fas fa-cloud-sun"></i> <span class="option-text">Weather Advisory</span>
+            </div>
+            <div class="option-card" onclick="selectOption('soil-health')">
+                <i class="fas fa-tint"></i> <span class="option-text">Soil Health Tips</span>
+            </div>
+            <div class="option-card" onclick="selectOption('market-prices')">
+                <i class="fas fa-rupee-sign"></i> <span class="option-text">Market Prices</span>
+            </div>
+            
+            <div class="language-selector">
+                <span><i class="fas fa-language"></i> Language:</span>
+                <select id="languageSelect" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="te">Telugu</option>
+                    <option value="bn">Bengali</option>
+                    <option value="gu">Gujarati</option>
+                </select>
+            </div>
+            
+            <div class="voice-input">
+                <button class="voice-btn" onclick="toggleVoiceInput()" id="voiceBtn">
+                    <i class="fas fa-microphone"></i> <span id="voiceBtnText">Voice Input</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="chatbot-container">
+            <div class="chat-header">
+                <h2><i class="fas fa-robot"></i> Kisan Mitra Assistant</h2>
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Kisan Mitra - Smart Crop Advisory System</p>
+        </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+    <script type="text/plain">
+        const OPENWEATHER_API_KEY = "00e57a66081e7510a54ec6f575e31b2b";
+        const OGD_API_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b";
+        
+        let userLocation = "", userState = "", userDistrict = "", userLanguage = "en";
+        let userLat = null, userLon = null;
+        let isAwaitingSoilType = false, isAwaitingCropName = false, isAwaitingPestInfo = false, isAwaitingSoilHealthResponse = false;
+        let currentSoilType = "";
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+        let isListening = false;
+        
+        if (recognition) {
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.onresult = (event) => {
+                document.getElementById('userInput').value = event.results[0][0].transcript;
+                toggleVoiceInput(true);
+                sendMessage();
+            };
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                toggleVoiceInput(true);
+            };
+            recognition.onend = () => {
+                if(isListening) toggleVoiceInput(true);
+            };
+        } else {
+            document.getElementById('voiceBtn').style.display = 'none';
+        }
+        
+        const translations = {
+            "en": {
+                "greeting": "Hello! I'm Kisan Mitra. How can I assist you with your farming needs today?",
+                "personalized_welcome": "Welcome from {location}! I can advise on crop selection, pest control, fertilizers, weather, and market prices. How can I help?",
+                "options_title": "Quick Advisory", "crop-selection-query": "Crop Selection", "pest-control-query": "Pest Control", "fertilizer-query": "Fertilizer Guidance", "weather-query": "Weather Advisory", "soil-health-query": "Soil Health", "market-prices-query": "Market Prices",
+                "fetching_prices": "Fetching market prices for {crop}...",
+                "ask_crop_price": "Which crop's price would you like to check?",
+                "weather_report": "<b>Weather in {location}:</b><br>Temperature: {temp}°C<br>Condition: {description}<br>Humidity: {humidity}%<br>Wind Speed: {wind} m/s",
+                "weather_error": "Sorry, I couldn't get the weather for your location. Please try again later.",
+                "soil-types": { "question": "What is your soil type?", "options": ["Alluvial", "Black", "Red", "Laterite", "Arid", "Forest"] },
+                "common-pests": { "question": "Which pest are you dealing with?", "options": ["Aphids", "Whiteflies", "Bollworms", "Stem Borers", "Locusts", "Other"] },
+                "soil-health": "To improve soil health, adding organic matter is key. Have you tested your soil's pH level recently?", "soil_health_yes": "Excellent! Knowing the pH helps in choosing the right crops and nutrients.", "soil_health_no": "I recommend getting a soil test. It provides crucial information on pH and nutrient levels for better crop planning.",
+                "fertilizer_guidance": "For good soil health, organic fertilizers like *compost or vermicompost* are highly recommended. They improve soil structure and fertility over time. How many acres are you planning to fertilize?",
+                "default": "I'm sorry, I didn't understand. Please ask about crops, pests, fertilizer, weather, or prices."
+            },
+            "hi": {
+                "greeting": "नमस्ते! मैं कृषि मित्र हूँ। आज मैं आपकी खेती की ज़रूरतों में कैसे सहायता कर सकता हूँ?",
+                "personalized_welcome": "{location} से आपका स्वागत है! मैं फसल चयन, कीट नियंत्रण, उर्वरक, मौसम और बाजार कीमतों पर सलाह दे सकता हूँ। मैं कैसे मदद करूँ?",
+                "options_title": "त्वरित सलाह", "crop-selection-query": "फ़सल चयन", "pest-control-query": "कीट नियंत्रण", "fertilizer-query": "उर्वरक मार्गदर्शन", "weather-query": "मौसम सलाहकार", "soil-health-query": "मृदा स्वास्थ्य", "market-prices-query": "बाजार मूल्य",
+                "fetching_prices": "{crop} के लिए बाजार मूल्य प्राप्त कर रहा हूँ...",
+                "ask_crop_price": "आप किस फसल की कीमत जानना चाहेंगे?",
+                "weather_report": "<b>{location} में मौसम:</b><br>तापमान: {temp}°C<br>स्थिति: {description}<br>आर्द्रता: {humidity}%<br>हवा की गति: {wind} m/s",
+                "weather_error": "क्षमा करें, मैं आपके स्थान के लिए मौसम की जानकारी प्राप्त नहीं कर सका। कृपया बाद में पुनः प्रयास करें।",
+                "soil-types": { "question": "आपकी मिट्टी का प्रकार क्या है?", "options": ["जलोढ़", "काली", "लाल", "लैटेराइट", "शुष्क", "वन"] },
+                "common-pests": { "question": "आप किस कीट से परेशान हैं?", "options": ["माहू", "सफ़ेद मक्खी", "बॉलवर्म", "तना छेदक", "टिड्डी", "अन्य"] },
+                "soil-health": "मिट्टी के स्वास्थ्य को बेहतर बनाने के लिए जैविक पदार्थ मिलाना महत्वपूर्ण है। क्या आपने हाल ही में अपनी मिट्टी के पीएच स्तर का परीक्षण किया है?", "soil_health_yes": "बहुत बढ़िया! पीएच जानने से सही फसलों और पोषक तत्वों को चुनने में मदद मिलती है।", "soil_health_no": "मैं मिट्टी परीक्षण करवाने की सलाह देता हूँ। यह बेहतर फसल योजना के लिए पीएच और पोषक तत्वों के स्तर पर महत्वपूर्ण जानकारी प्रदान करता है।",
+                "fertilizer_guidance": "अच्छी मिट्टी के स्वास्थ्य के लिए, *कम्पोस्ट या वर्मीकम्पोस्ट* जैसे जैविक उर्वरकों की अत्यधिक अनुशंसा की जाती है। वे समय के साथ मिट्टी की संरचना और उर्वरता में सुधार करते हैं। आप कितने एकड़ में खाद डालने की योजना बना रहे हैं?",
+                "default": "क्षमा करें, मैं समझ नहीं पाया। कृपया फसल, कीट, उर्वरक, मौसम या कीमतों के बारे में पूछें।"
+            },
+            "ta": {
+                "greeting": "வணக்கம்! நான் கிருஷி மித்ரா. இன்று உங்கள் விவசாயத் தேவைகளுக்கு நான் எப்படி உதவ முடியும்?",
+                "personalized_welcome": "{location} இலிருந்து வரவேற்கிறோம்! பயிர் தேர்வு, பூச்சி கட்டுப்பாடு, உரங்கள், வானிலை மற்றும் சந்தை விலைகள் குறித்து நான் உங்களுக்கு ஆலோசனை வழங்க முடியும். நான் எப்படி உதவ முடியும்?",
+                "options_title": "விரைவு ஆலோசனை", "crop-selection-query": "பயிர் தேர்வு", "pest-control-query": "பூச்சி கட்டுப்பாடு", "fertilizer-query": "உர வழிகாட்டுதல்", "weather-query": "வானிலை அறிக்கை", "soil-health-query": "மண் வளம்", "market-prices-query": "சந்தை விலைகள்",
+                "fetching_prices": "{crop} க்கான சந்தை விலைகளைப் பெறுகிறேன்...",
+                "ask_crop_price": "நீங்கள் எந்த பயிரின் விலையை அறிய விரும்புகிறீர்கள்?",
+                "weather_report": "<b>{location} இல் வானிலை:</b><br>வெப்பநிலை: {temp}°C<br>நிலை: {description}<br>ஈரப்பதம்: {humidity}%<br>காற்றின் வேகம்: {wind} m/s",
+                "weather_error": "மன்னிக்கவும், உங்கள் இருப்பிடத்திற்கான வானிலை அறிக்கையைப் பெற முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+                "soil-types": { "question": "உங்கள் மண்ணின் வகை என்ன?", "options": ["வண்டல்", "கரிசல்", "செம்மண்", "சரளை", "பாலை", "காடு"] },
+                "common-pests": { "question": "நீங்கள் எந்த பூச்சியை எதிர்கொள்கிறீர்கள்?", "options": ["அசுவினி", "வெள்ளை ஈ", "காய்ப் புழு", "தண்டுத் துளைப்பான்", "வெட்டுக்கிளி", "மற்றவை"] },
+                "soil-health": "மண் வளத்தை மேம்படுத்த, సేంద్రియ పదార్థాలను కలపడం ముఖ్యం. நீங்கள் ఇటీవల உங்கள் நேல pH స్థాయిని పరీక్షించారా?", "soil_health_yes": "அருமை! pH அளவை அறிவது சரியான பயிர்களையும் ஊட்டச்சத்துக்களையும் தேர்ந்தெடுக்க உதவுகிறது.", "soil_health_no": "மண் பரிசோதனை செய்ய பரிந்துரைக்கிறேன். இது சிறந்த பயிர் திட்டமிடலுக்கு pH மற்றும் ஊட்டச்சத்து அளவுகள் பற்றிய முக்கியமான தகவல்களை வழங்குகிறது.",
+                "fertilizer_guidance": "நல்ல மண் வளத்திற்கு, *மண்புழு உரம் அல்லது தொழு உரம்* போன்ற கரிம உரங்கள் மிகவும் பரிந்துரைக்கப்படுகின்றன. இவை காலப்போக்கில் மண்ணின் அமைப்பையும் வளத்தையும் மேம்படுத்துகின்றன. நீங்கள் எத்தனை ஏக்கரில் உரமிட திட்டமிட்டுள்ளீர்கள்?",
+                "default": "மன்னிக்கவும், எனக்குப் புரியவில்லை. பயிர்கள், பூச்சிகள், உரம், வானிலை அல்லது விலைகள் பற்றி கேட்கவும்."
+            },
+            "te": {
+                "greeting": "నమస్కారం! నేను కృషి మిత్ర. ఈ రోజు మీ వ్యవసాయ అవసరాలకు నేను ఎలా సహాయపడగలను?",
+                "personalized_welcome": "{location} నుండి స్వాగతం! నేను పంట ఎంపిక, తెగుళ్ళ నివారణ, ఎరువులు, వాతావరణం మరియు మార్కెట్ ధరలపై సలహా ఇవ్వగలను. నేను ఎలా సహాయపడగలను?",
+                "options_title": "త్వరిత సలహా", "crop-selection-query": "పంట ఎంపిక", "pest-control-query": "పురుగుల నివారణ", "fertilizer-query": "ఎరువుల మార్గదర్శకం", "weather-query": "వాతావరణ సలహా", "soil-health-query": "నేల ఆరోగ్యం", "market-prices-query": "మార్కెట్ ధరలు",
+                "fetching_prices": "{crop} కోసం మార్కెట్ ధరలను పొందుతున్నాను...",
+                "ask_crop_price": "మీరు ఏ పంట ధరను తెలుసుకోవాలనుకుంటున్నారు?",
+                "weather_report": "<b>{location}లో వాతావరణం:</b><br>ఉష్ణోగ్రత: {temp}°C<br>స్థితి: {description}<br>తేమ: {humidity}%<br>గాలి వేగం: {wind} m/s",
+                "weather_error": "క్షమించండి, మీ ప్రాంతానికి వాతావరణ సమాచారం పొందలేకపోయాను. దయచేసి తర్వాత ప్రయత్నించండి.",
+                "soil-types": { "question": "మీ నేల రకం ఏమిటి?", "options": ["ఒండ్రు", "నల్లరేగడి", "ఎర్ర", "లేటరైట్", "శుష్క", "అటవీ"] },
+                "common-pests": { "question": "మీరు ఏ పురుగుతో బాధపడుతున్నారు?", "options": ["పేనుబంక", "తెల్ల దోమ", "కాయతొలుచు పురుగు", "కాండం తొలిచే పురుగు", "మిడత", "ఇతర"] },
+                "soil-health": "మట్టి ఆరోగ్యాన్ని మెరుగుపరచడానికి, సేంద్రీయ పదార్థాన్ని జోడించడం ముఖ్యం. మీరు ఇటీవల మీ మట్టి యొక్క pH స్థాయిని పరీక్షించారా?", "soil_health_yes": "అద్భుతం! pH తెలుసుకోవడం సరైన పంటలు మరియు పోషకాలను ఎంచుకోవడంలో సహాయపడుతుంది.", "soil_health_no": "నేను మట్టి పరీక్ష చేయించుకోవాలని సిఫార్సు చేస్తున్నాను. ఇది మెరుగైన పంట ప్రణాళిక కోసం pH మరియు పోషకాల స్థాయిలపై కీలక సమాచారాన్ని అందిస్తుంది.",
+                "fertilizer_guidance": "మంచి నేల ఆరోగ్యం కోసం, *కంపోస్ట్ లేదా వర్మీకంపోస్ట్* వంటి సేంద్రియ ఎరువులు బాగా సిఫార్సు చేయబడ్డాయి. అవి కాలక్రమేణా నేల నిర్మాణం మరియు సారాన్ని మెరుగుపరుస్తాయి. మీరు ఎన్ని ఎకరాలకు ఎరువు వేయాలని ప్లాన్ చేస్తున్నారు?",
+                "default": "క్షమించండి, నాకు అర్థం కాలేదు. దయచేసి పంటలు, తెగుళ్లు, ఎరువులు, వాతావరణం లేదా ధరల గురించి అడగండి."
+            },
+            "bn": {
+                "greeting": "নমস্কার! আমি কৃষি মিত্র। আজ আমি আপনার চাষের প্রয়োজনে কীভাবে সাহায্য করতে পারি?",
+                "personalized_welcome": "{location} থেকে স্বাগতম! আমি ফসল নির্বাচন, কীটপতঙ্গ নিয়ন্ত্রণ, সার, আবহাওয়া এবং বাজারদর সম্পর্কে পরামর্শ দিতে পারি। আমি কীভাবে সাহায্য করতে পারি?",
+                "options_title": "দ্রুত পরামর্শ", "crop-selection-query": "ফসল নির্বাচন", "pest-control-query": " কীটপতঙ্গ নিয়ন্ত্রণ", "fertilizer-query": "সারের নির্দেশিকা", "weather-query": "আবহাওয়ার পরামর্শ", "soil-health-query": "মাটির স্বাস্থ্য", "market-prices-query": "বাজার দর",
+                "fetching_prices": "{crop} এর জন্য বাজার দর আনা হচ্ছে...",
+                "ask_crop_price": "আপনি কোন ফসলের দাম জানতে চান?",
+                "weather_report": "<b>{location} এ আবহাওয়া:</b><br>তাপমাত্রা: {temp}°C<br>অবস্থা: {description}<br>আর্দ্রতা: {humidity}%<br>বাতাসের গতি: {wind} m/s",
+                "weather_error": "দুঃখিত, আমি আপনার অবস্থানের জন্য আবহাওয়ার তথ্য পেতে পারিনি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+                "soil-types": { "question": "আপনার মাটির ধরন কী?", "options": ["পলিমাটি", "কালো", "লাল", "ল্যাটেরাইট", "শুষ্ক", "বন"] },
+                "common-pests": { "question": "আপনি কোন পোকার সাথে মোকাবিলা করছেন?", "options": ["জাবপোকা", "সাদা মাছি", "ফল ছিদ্রকারী পোকা", "কাণ্ড ছিদ্রকারী পোকা", "পঙ্গপাল", "অন্যান্য"] },
+                "soil-health": "মাটির স্বাস্থ্য উন্নত করতে জৈব পদার্থ যোগ করা জরুরি। আপনি সম্প্রতি আপনার মাটির pH স্তর পরীক্ষা করেছেন?", "soil_health_yes": "চমৎকার! pH জানা সঠিক ফসল এবং পুষ্টি বেছে নিতে সাহায্য করে।", "soil_health_no": "আমি মাটি পরীক্ষা করার পরামর্শ দিচ্ছি। এটি উন্নত ফসল পরিকল্পনার জন্য pH এবং পুষ্টির মাত্রা সম্পর্কে গুরুত্বপূর্ণ তথ্য প্রদান করে।",
+                "fertilizer_guidance": "ভালো মাটির স্বাস্থ্যের জন্য, *কম্পোস্ট বা ভার্মিকম্পোস্টের* মতো জৈব সার অত্যন্ত প্রস্তাবিত। এগুলি সময়ের সাথে সাথে মাটির গঠন এবং উর্বরতা উন্নত করে। আপনি কত একর জমিতে সার দেওয়ার পরিকল্পনা করছেন?",
+                "default": "দুঃখিত, আমি বুঝতে পারিনি। অনুগ্রহ করে ফসল, কীটপতঙ্গ, সার, আবহাওয়া বা দাম সম্পর্কে জিজ্ঞাসা করুন।"
+            }
+        };
+        
+        const intents = {
+            "en": { "greeting": ["hello", "hi", "hey"], "crop_selection": ["crop", "sowing", "plant"], "pest_control": ["pest", "insect", "disease"], "fertilizer": ["fertilizer", "compost", "manure"], "weather": ["weather", "rain", "forecast"], "soil_health": ["soil", "health", "ph"], "market_prices": ["price", "market", "rate"] },
+            "hi": { "greeting": ["नमस्ते", "नमस्कार"], "crop_selection": ["फसल", "बुवाई", "लगाना"], "pest_control": ["कीट", "रोग", "कीड़ा"], "fertilizer": ["उर्वरक", "खाद"], "weather": ["मौसम", "बारिश"], "soil_health": ["मिट्टी", "पीएच"], "market_prices": ["कीमत", "बाजार", "भाव", "दाम"] },
+            "ta": { "greeting": ["வணக்கம்"], "crop_selection": ["பயிர்", "விதைப்பு"], "pest_control": ["பூச்சி", "நோய்"], "fertilizer": ["உரம்"], "weather": ["வானிலை", "மழை"], "soil_health": ["மண்", "பிஎச்"], "market_prices": ["விலை", "சந்தை"] },
+            "te": { "greeting": ["నమస్కారం"], "crop_selection": ["పంట", "విత్తడం"], "pest_control": ["పురుగు", "తెగులు", "రోగం"], "fertilizer": ["ఎరువు"], "weather": ["వాతావరణం", "వర్షం"], "soil_health": ["నేల", "పిహెచ్"], "market_prices": ["ధర", "మార్కెట్"] },
+            "bn": { "greeting": ["নমস্কার", "হ্যালো"], "crop_selection": ["ফসল", "বপন", "চাষ"], "pest_control": ["পোকা", "রোগ"], "fertilizer": ["সার"], "weather": ["আবহাওয়া", "বৃষ্টি"], "soil_health": ["মাটি", "পিএইচ"], "market_prices": ["দাম", "দর", "বাজার"] }
+        };
+
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLat = position.coords.latitude;
+                        userLon = position.coords.longitude;
+                        reverseGeocode(userLat, userLon);
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error);
+                        showManualLocationInput("Could not detect location. Please enter it manually.");
+                    }
+                );
+            } else {
+                showManualLocationInput("Geolocation is not supported. Please enter your location manually.");
+            }
+        };
+
+        function reverseGeocode(lat, lon) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.address && data.address.country_code === 'in') {
+                        userState = data.address.state;
+                        userDistrict = data.address.state_district || data.address.city || data.address.county;
+                        if (userDistrict && userState) {
+                            userLocation = `${userDistrict}, ${userState}`;
+                            document.getElementById('locationStatus').textContent = `Location: ${userLocation}`;
+                        } else {
+                            showManualLocationInput("Could not pinpoint district. Please enter manually.");
+                        }
+                    } else {
+                        showManualLocationInput("Service is available only in India. Please enter location.");
+                    }
+                    document.getElementById('startButton').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error("Reverse geocoding error:", error);
+                    showManualLocationInput("Could not determine city. Please enter it manually.");
+                });
+        }
+
+        function startChat() {
+            userLanguage = document.getElementById('initialLanguage').value;
+            const manualLocation = document.getElementById('initialLocation').value.trim();
+
+            if (manualLocation) {
+                const parts = manualLocation.split(',').map(p => p.trim());
+                if (parts.length > 1) {
+                    userDistrict = parts[0];
+                    userState = parts[1];
+                    userLocation = manualLocation;
+                } else {
+                    alert("Please enter location as 'District, State' (e.g., Nashik, Maharashtra)");
+                    return;
+                }
+            }
+
+            if (!userLocation) {
+                alert("Location is required to start.");
+                return;
+            }
+
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+            document.getElementById('languageSelect').value = userLanguage;
+            changeLanguage(false);
+            
+            setTimeout(() => {
+                const welcomeMsg = translations[userLanguage].personalized_welcome.replace('{location}', userLocation);
+                addMessage(welcomeMsg, 'bot');
+            }, 500);
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            if (userInput.value.trim() === "") return;
+            const message = userInput.value.trim();
+            addMessage(message, 'user');
+            userInput.value = "";
+            
+            setTimeout(() => processMessage(message), 800);
+        }
+        
+        function processMessage(message) {
+            if (isAwaitingSoilType) { sendSoilType(message); }
+            else if (isAwaitingPestInfo) { sendPestType(message); }
+            else if (isAwaitingCropName) { getMarketPrices(message); }
+            else if (isAwaitingSoilHealthResponse) { handleSoilHealthResponse(message); }
+            else { getBotResponse(message); }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") sendMessage();
+        }
+
+        function addMessage(content, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            let formattedContent = content.replace(/\\(.?)\\*/g, '<b>$1</b>');
+            formattedContent = formattedContent.replace(/\(.?)\*/g, '<i>$1</i>');
+            
+            messageDiv.innerHTML = formattedContent;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function selectOption(optionKey) {
+            const res = translations[userLanguage];
+            addMessage(res[`${optionKey}-query`], 'user');
+            
+            setTimeout(() => {
+                const actions = {
+                    'crop-selection': () => {
+                        isAwaitingSoilType = true;
+                        addMessage(getOptionsHTML(res['soil-types'], 'soil-option', 'sendSoilType'), 'bot');
+                    },
+                    'pest-control': () => {
+                        isAwaitingPestInfo = true;
+                        addMessage(getOptionsHTML(res['common-pests'], 'pest-option', 'sendPestType'), 'bot');
+                    },
+                    'fertilizer': () => { // <-- FIXED: Added fertilizer action
+                        addMessage(res['fertilizer_guidance'], 'bot');
+                    },
+                    'weather': () => getWeather(userLat, userLon, userLanguage),
+                    'soil-health': () => {
+                        isAwaitingSoilHealthResponse = true;
+                        addMessage(res['soil-health'], 'bot');
+                    },
+                    'market-prices': () => getMarketPrices()
+                };
+                
+                if (actions[optionKey]) actions[optionKey]();
+            }, 800);
+        }
+
+        function getOptionsHTML(data, className, onclickFunc) {
+            let html = `<p>${data.question}</p><div class="${className}s">`;
+            data.options.forEach(opt => {
+                html += `<div class="${className}" onclick="${onclickFunc}('${opt}')">${opt}</div>`;
+            });
+            return html + '</div>';
+        }
+
+        function getBotResponse(message) {
+            const lowerCaseMessage = message.toLowerCase();
+            const langIntents = intents[userLanguage];
+            let intentFound = Object.keys(langIntents).find(intent => 
+                langIntents[intent].some(keyword => lowerCaseMessage.includes(keyword))
+            );
+
+            if (intentFound) {
+                selectOption(intentFound.replace('_', '-'));
+            } else {
+                addMessage(translations[userLanguage].default, 'bot');
+            }
+        }
+
+        async function getMarketPrices(cropName = null) {
+            const res = translations[userLanguage];
+            if (!cropName) {
+                addMessage(res.ask_crop_price, 'bot');
+                isAwaitingCropName = true;
+                return;
+            }
+            isAwaitingCropName = false;
+            addMessage(res.fetching_prices.replace('{crop}', cropName), 'bot');
+            addMessage("Note: Live market price API integration is for demonstration purposes. Using sample data.", 'bot');
+        }
+
+        async function getWeather(lat, lon) {
+            const res = translations[userLanguage];
+            if (!lat || !lon) {
+                addMessage(res.weather_error, 'bot');
+                return;
+            }
+            
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Weather data not available.');
+                const data = await response.json();
+                
+                const report = res.weather_report
+                    .replace('{location}', data.name)
+                    .replace('{temp}', Math.round(data.main.temp))
+                    .replace('{description}', data.weather[0].description)
+                    .replace('{humidity}', data.main.humidity)
+                    .replace('{wind}', data.wind.speed);
+                addMessage(report, 'bot');
+            } catch (error) {
+                console.error("Error fetching weather data:", error);
+                addMessage(res.weather_error, 'bot');
+            }
+        }
+        
+        function handleSoilHealthResponse(message) {
+            isAwaitingSoilHealthResponse = false;
+            const res = translations[userLanguage];
+            const lowerMsg = message.toLowerCase();
+            const yes_words = ["yes", "yeah", "haan", "हाँ", "ஆம்", "అవును", "হ্যাঁ", "y"];
+            const no_words = ["no", "nope", "nah", "नहीं", "இல்லை", "లేదు", "না", "n"];
+
+            if (yes_words.some(word => lowerMsg.includes(word))) {
+                addMessage(res.soil_health_yes, 'bot');
+            } else if (no_words.some(word => lowerMsg.includes(word))) {
+                addMessage(res.soil_health_no, 'bot');
+            } else {
+                getBotResponse(message);
+            }
+        }
+
+        function changeLanguage(updateChat = true) {
+            userLanguage = document.getElementById('languageSelect').value;
+            const res = translations[userLanguage];
+            document.getElementById('optionsTitle').textContent = res.options_title;
+            document.querySelectorAll('.option-card').forEach(card => {
+                const key = card.getAttribute('onclick').match(/'([^']+)'/)[1] + '-query';
+                card.querySelector('.option-text').textContent = res[key];
+            });
+            if (updateChat) {
+                document.getElementById('chatMessages').innerHTML = '';
+                addMessage(res.personalized_welcome.replace('{location}', userLocation), 'bot');
+            }
+        }
+
+        function toggleVoiceInput(forceStop = false) {
+            if (!recognition) return;
+            const btn = document.getElementById('voiceBtn');
+            const btnText = document.getElementById('voiceBtnText');
+
+            if (isListening || forceStop) {
+                recognition.stop();
+                isListening = false;
+                btn.classList.remove('active');
+                btnText.textContent = 'Voice Input';
+            } else {
+                recognition.lang = userLanguage === 'hi' ? 'hi-IN' : `${userLanguage}-${userLanguage === 'en' ? 'IN' : userLanguage.toUpperCase()}`;
+                try {
+                    recognition.start();
+                    isListening = true;
+                    btn.classList.add('active');
+                    btnText.textContent = 'Listening...';
+                } catch(e) {
+                    console.error("Voice recognition start error:", e);
+                    alert("Could not start voice recognition. It might be already active or an error occurred.");
+                }
+            }
+        }
+
+        function showManualLocationInput(message) {
+            document.getElementById('locationStatus').textContent = message;
+            document.getElementById('locationInputContainer').style.display = 'block';
+            document.getElementById('startButton').style.display = 'block';
+        }
+        
+        function sendSoilType(type) {
+            isAwaitingSoilType = false;
+            const clickedType = translations[userLanguage]['soil-types'].options.find(opt => type.toLowerCase().includes(opt.toLowerCase())) || type;
+            addMessage(`You selected: *${clickedType}*`, 'user');
+            
+            let recommendation = '';
+            const normalizedType = clickedType.toLowerCase();
+
+            if (normalizedType.includes('alluvial')) {
+                recommendation = 'this fertile soil is excellent for crops like *Wheat, Rice, Sugarcane, and Jute*.';
+            } else if (normalizedType.includes('black')) {
+                recommendation = 'its high moisture retention is ideal for *Cotton, Soybean, and Jowar*.';
+            } else if (normalizedType.includes('red')) {
+                recommendation = 'it is well-suited for crops like *Groundnuts, Pulses, and Millets*.';
+            } else if (normalizedType.includes('laterite')) {
+                recommendation = 'it is perfect for plantation crops such as *Tea, Coffee, and Spices*.';
+            } else if (normalizedType.includes('arid')) {
+                recommendation = 'with proper irrigation, you can grow *Bajra, Barley, and Dates*.';
+            } else if (normalizedType.includes('forest')) {
+                recommendation = 'it is rich in humus and great for *Fruits, Tea, and Medicinal Plants*.';
+            } else {
+                recommendation = 'I do not have a specific recommendation for that soil type. Based on your area, *Wheat* and *Maize* are generally safe choices.';
+            }
+            
+            addMessage(`Based on your location and **${clickedType}** soil, ${recommendation}`, 'bot');
+        }
+
+        function sendPestType(type) {
+            isAwaitingPestInfo = false;
+            const clickedType = translations[userLanguage]['common-pests'].options.find(opt => type.toLowerCase().includes(opt.toLowerCase().split(' ')[0])) || type;
+            addMessage(`You selected: *${clickedType}*`, 'user');
+
+            let solution = '';
+            const normalizedType = clickedType.toLowerCase();
+
+            if (normalizedType.includes('aphid')) {
+                solution = 'use a *Neem oil-based spray*. Ensure you cover the underside of the leaves. Encouraging ladybugs can also help naturally.';
+            } else if (normalizedType.includes('whitefl')) {
+                solution = 'use *yellow sticky traps* to monitor and capture them. A mild insecticidal soap solution can also be effective.';
+            } else if (normalizedType.includes('bollworm')) {
+                solution = 'pheromone traps are effective for monitoring. Applying a *Bt (Bacillus thuringiensis) based pesticide* is a good organic solution.';
+            } else if (normalizedType.includes('stem borer')) {
+                solution = 'remove and destroy infected plant parts immediately. Releasing *Trichogramma wasps* can act as a biological control.';
+            } else if (normalizedType.includes('locust')) {
+                solution = 'this is a serious issue. For large swarms, you must *contact your local agricultural authorities immediately*. Creating loud noises can sometimes deter smaller groups.';
+            } else {
+                solution = 'please describe the pest and the affected crop in more detail for a specific recommendation.';
+            }
+            
+            addMessage(`For **${clickedType}**, ${solution}`, 'bot');
+        }
+
+    </script>
+</body>
+</html>
