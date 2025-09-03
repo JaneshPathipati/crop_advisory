@@ -410,10 +410,8 @@
                 <input type="text" id="initialLocation" placeholder="e.g., Bhopal, Madhya Pradesh">
             </div>
             <div class="location-status" id="locationStatus">
-                Detecting your location...
+                Detecting your location... <a href="#" id="enterManuallyLink" onclick="showManualLocationInput('Please enter your location to proceed.'); return false;">Enter manually</a>
             </div>
-            <button onclick="detectLocation()" id="detectBtn">Detect My Location</button>
-            <p id="location"></p>
             <button onclick="startChat()" id="startButton" style="display: none;">Start Chat</button>
         </div>
     </div>
@@ -857,24 +855,6 @@
             document.getElementById('startButton').style.display = 'block';
         }
         
-        function detectLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLat = position.coords.latitude;
-                        userLon = position.coords.longitude;
-                        reverseGeocode(userLat, userLon);
-                    },
-                    (error) => {
-                        console.error("Geolocation error:", error);
-                        showManualLocationInput("Could not detect location. Please enter it manually.");
-                    }
-                );
-            } else {
-                showManualLocationInput("Geolocation is not supported. Please enter your location manually.");
-            }
-        }
-
         function sendSoilType(type) {
             isAwaitingSoilType = false;
             const clickedType = translations[userLanguage]['soil-types'].options.find(opt => type.toLowerCase().includes(opt.toLowerCase())) || type;

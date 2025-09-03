@@ -153,10 +153,6 @@ function detectLocation() {
 				const { latitude, longitude } = position.coords;
 				userLat = latitude;
 				userLon = longitude;
-				const locP = document.getElementById('location');
-				if (locP) {
-					locP.innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
-				}
 				try {
 					reverseGeocode(userLat, userLon);
 				} catch (e) {
@@ -165,26 +161,35 @@ function detectLocation() {
 				}
 			},
 			(error) => {
-				console.error("Geolocation error:", error && error.message ? error.message : error);
-				alert("Unable to get location: " + (error && error.message ? error.message : 'Unknown error'));
+				console.error("Error getting location:", error && error.message ? error.message : error);
 				if (!manualShown) {
+					alert("Unable to get your location. Please allow location access or enter it manually.");
 					showManualLocationInput("Location access denied/unavailable. Please enter it manually.");
 				}
 			},
 			{ enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
 		);
 	} else {
-		alert("Geolocation not supported in this browser.");
+		alert("Geolocation is not supported by this browser.");
 		showManualLocationInput("Geolocation not supported. Please enter location manually.");
 	}
 }
 
-// existing onload: do not auto-call detect; keep UI init only
+// existing onload: call detectLocation()
 window.onload = function () {
 	const linkEl = document.createElement('link');
 	linkEl.rel = 'stylesheet';
 	linkEl.href = 'styles.css';
 	document.head.appendChild(linkEl);
+
+	// Watchdog: if location not set within 5s, show manual entry
+	setTimeout(() => {
+		if (!userLocation && !manualShown) {
+			showManualLocationInput("Couldn't auto-detect location. Please enter it manually.");
+		}
+	}, 5000);
+
+	detectLocation();
 
 	// Allow pressing Enter in manual input to start
 	const manualInput = document.getElementById('initialLocation');
