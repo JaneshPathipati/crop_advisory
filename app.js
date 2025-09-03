@@ -152,12 +152,12 @@ window.onload = function () {
 	linkEl.href = 'styles.css';
 	document.head.appendChild(linkEl);
 
-	// Watchdog: if location not set within 7s, show manual entry
+	// Watchdog: if location not set within 5s, show manual entry
 	setTimeout(() => {
 		if (!userLocation && !manualShown) {
 			showManualLocationInput("Couldn't auto-detect location. Please enter it manually.");
 		}
-	}, 7000);
+	}, 5000);
 
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(
@@ -193,7 +193,10 @@ window.onload = function () {
 
 function reverseGeocode(lat, lon) {
 	fetch(`/api/reverse-geocode?format=json&lat=${lat}&lon=${lon}`)
-		.then(response => response.json())
+		.then(response => {
+			if (!response.ok) throw new Error('reverse geocode not ok');
+			return response.json();
+		})
 		.then(data => {
 			if (data.address && data.address.country_code === 'in') {
 				userState = data.address.state;
@@ -226,6 +229,8 @@ async function tryLocationFallbacks() {
 				await reverseGeocode(userLat, userLon);
 				return;
 			}
+		} else {
+			throw new Error('ip proxy not ok');
 		}
 	} catch (e) {
 		console.warn('IP geolocation failed:', e);
