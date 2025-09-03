@@ -182,6 +182,15 @@ window.onload = function () {
 	linkEl.href = 'styles.css';
 	document.head.appendChild(linkEl);
 
+	// Bind manual-entry link (works even if inline handler blocked)
+	const manualLink = document.getElementById('enterManuallyLink');
+	if (manualLink) {
+		manualLink.addEventListener('click', function (e) {
+			e.preventDefault();
+			showManualLocationInput('Please enter your location to proceed.');
+		});
+	}
+
 	// Watchdog: if location not set within 5s, show manual entry
 	setTimeout(() => {
 		if (!userLocation && !manualShown) {
