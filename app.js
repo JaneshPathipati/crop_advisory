@@ -146,6 +146,36 @@ const intents = {
 // Detection/manual flags
 let manualShown = false;
 
+function detectLocation() {
+	if ("geolocation" in navigator) {
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				const { latitude, longitude } = position.coords;
+				userLat = latitude;
+				userLon = longitude;
+				try {
+					reverseGeocode(userLat, userLon);
+				} catch (e) {
+					console.error('Reverse geocode call failed:', e);
+					showManualLocationInput("Could not determine city. Please enter it manually.");
+				}
+			},
+			(error) => {
+				console.error("Error getting location:", error && error.message ? error.message : error);
+				if (!manualShown) {
+					alert("Unable to get your location. Please allow location access or enter it manually.");
+					showManualLocationInput("Location access denied/unavailable. Please enter it manually.");
+				}
+			},
+			{ enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+		);
+	} else {
+		alert("Geolocation is not supported by this browser.");
+		showManualLocationInput("Geolocation not supported. Please enter location manually.");
+	}
+}
+
+// existing onload: call detectLocation()
 window.onload = function () {
 	const linkEl = document.createElement('link');
 	linkEl.rel = 'stylesheet';
@@ -159,26 +189,7 @@ window.onload = function () {
 		}
 	}, 5000);
 
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				userLat = position.coords.latitude;
-				userLon = position.coords.longitude;
-				reverseGeocode(userLat, userLon);
-			},
-			async (error) => {
-				console.error("Geolocation error:", error);
-				await tryLocationFallbacks();
-				// If still unresolved, force manual entry
-				if (!userLocation && !manualShown) {
-					showManualLocationInput("Location access denied/unavailable. Please enter it manually.");
-				}
-			},
-			{ enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-		);
-	} else {
-		tryLocationFallbacks();
-	}
+	detectLocation();
 
 	// Allow pressing Enter in manual input to start
 	const manualInput = document.getElementById('initialLocation');
